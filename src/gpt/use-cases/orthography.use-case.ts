@@ -1,8 +1,13 @@
+interface Options {
+    prompt: string;
+}
 
+export const orthographyCheckUseCase = async (option: Options) => {
 
-export const orthographyCheckUseCase = async () => {
+    const { prompt } = option;
 
     return {
-        hola: 'Mundo desde use Case'
+        prompt: prompt,
+        apiKey: process.env.OPENAI_API_KEY
     }
 }
