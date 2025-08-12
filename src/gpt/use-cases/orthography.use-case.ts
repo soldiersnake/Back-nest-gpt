@@ -20,11 +20,11 @@ export const orthographyCheckUseCase = async (openia: OpenAI, option: Options) =
     
                     Si no hay errores, debes de retornar un mensaje de felicitaciones.
 
-                    Ejemoplo de salida:
+                    Ejemplo de salida:
                     {
-                        "UserScore": number,
-                        "Errors": string[],  // ["error  -> solucion"],
-                        "Message": string // Usa emojis y textos para felicitar al usuario
+                        "userScore": number,
+                        "errors": string[],  // ["error  -> solucion"],
+                        "message": string // Usa emojis y textos para felicitar al usuario
                     }
                     `,
                 },
