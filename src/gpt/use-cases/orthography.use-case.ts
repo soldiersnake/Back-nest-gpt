@@ -5,8 +5,11 @@ interface Options {
 }
 
 export const orthographyCheckUseCase = async (openia: OpenAI, option: Options) => {
-
     const { prompt } = option;
+
+    if (!prompt?.trim()) {
+        return "⚠️ Debes enviar una horacion/parrafo en el campo `prompt`.";
+    }
 
     try {
         const completion = await openia.chat.completions.create({
@@ -33,7 +36,7 @@ export const orthographyCheckUseCase = async (openia: OpenAI, option: Options) =
                     content: prompt
                 },
             ],
-            model: "gpt-4o",
+            model: "gpt-4o-mini",
             temperature: 0.3, // entre mas cercano a 0 es mas preciso y menos randon las respuesta
             max_tokens: 150 // es el costo que tendra la respuesta
         });
@@ -47,6 +50,6 @@ export const orthographyCheckUseCase = async (openia: OpenAI, option: Options) =
         return jsonResp;
     } catch (error) {
         console.log('ERROR MENSAJE', error);
-        return error.error.message;
+        return error?.error?.message ?? error?.message ?? "Error inesperado llamando a OpenAI.";
     }
 }
