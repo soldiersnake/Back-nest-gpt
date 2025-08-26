@@ -3,6 +3,10 @@
 /node_modules
 /build
 
+# exclude generatec content
+/generated/*
+!/generated/.gitkeep
+
 .env
 
 # Logs
