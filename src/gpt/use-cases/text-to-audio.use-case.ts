@@ -1,6 +1,6 @@
 import * as path from 'path';
-import OpenAI from 'openai';
 import * as fs from 'fs';
+import OpenAI from 'openai';
 
 interface Options {
     prompt: string;
