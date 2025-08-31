@@ -1,7 +1,25 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Res } from '@nestjs/common';
+import { BadRequestException, Body, Controller, FileTypeValidator, FileValidator, Get, HttpStatus, MaxFileSizeValidator, Param, ParseFilePipe, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { GptService } from './gpt.service';
 import { OrthographyDto, ProsConsDiscusserDto, TextToAudioDto, TranslateDto } from './dtos';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { type Response } from 'express';
+import { diskStorage } from 'multer';
+import * as path from 'path';
+import * as fs from 'fs';
+
+// ---------- Validador custom ----------
+class AudioMimeValidator extends FileValidator<{ mime: RegExp }> {
+  isValid(file?: Express.Multer.File): boolean {
+    if (!file) return false;
+    return this.validationOptions.mime.test(file.mimetype); // p.ej. audio/mp4, audio/mpeg, etc.
+  }
+  buildErrorMessage(): string {
+    return 'Invalid file type. Only audio/* is allowed.';
+  }
+}
+
+const uploadDir = path.resolve(__dirname, '../../generated/uploads');
+const AUDIO_REGEX = /^audio\/.+$/i; // si querés restringir: /^audio\/(mpeg|mp3|wav|x-m4a|aac|mp4|m4a)$/i
 
 @Controller('gpt')
 export class GptController {
@@ -83,6 +101,57 @@ export class GptController {
         ok: false,
         message: error ?? 'Error interno',
       });
+    }
+  }
+
+  @Post('audio-to-text')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: (_req, _file, cb) => {
+          fs.mkdirSync(uploadDir, { recursive: true });
+          cb(null, uploadDir);
+        },
+        filename: (_req, file, cb) => {
+          const ext = path.extname(file.originalname) || '.bin';
+          cb(null, `${Date.now()}${ext}`);
+        },
+      }),
+      // ---------- fileFilter en Multer ----------
+      fileFilter: (_req, file, cb) => {
+        const ok = AUDIO_REGEX.test(file.mimetype); // acepta audio/mp4 (m4a), mpeg, wav, etc.
+        cb(ok ? null : new BadRequestException(`Invalid mimetype: ${file.mimetype}`), ok);
+      },
+    }),
+  )
+  async audioToText(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({
+            maxSize: 5 * 1024 * 1024,
+            message: 'File is bigger than 5 mb',
+          }),
+          // ---------- Pipe con validador custom ----------
+          new AudioMimeValidator({ mime: AUDIO_REGEX }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    try {
+
+      return {
+        ok: true,
+        mimetype: file.mimetype,
+        filename: file.filename,
+        path: file.path.replace(/\\/g, '/'),
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        message: error ?? 'Error interno',
+      };
     }
   }
 
