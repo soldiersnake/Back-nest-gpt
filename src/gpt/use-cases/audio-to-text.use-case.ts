@@ -9,8 +9,6 @@ interface Options {
 
 export const audioToTextUseCase = async (openia: OpenAI, options: Options) => {
     const { prompt, audioFile } = options;
-    console.log({ prompt, audioFile });
-
 
     const response = await openia.audio.transcriptions.create({
         model: 'gpt-4o-transcribe',
