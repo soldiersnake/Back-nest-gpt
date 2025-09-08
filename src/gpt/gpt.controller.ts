@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, FileTypeValidator, FileValidator, Get, HttpStatus, MaxFileSizeValidator, Param, ParseFilePipe, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { GptService } from './gpt.service';
-import { AudioToTextDto, ImageGenerationDto, OrthographyDto, ProsConsDiscusserDto, TextToAudioDto, TranslateDto } from './dtos';
+import { AudioToTextDto, ImageGenerationDto, ImageVariationDTO, OrthographyDto, ProsConsDiscusserDto, TextToAudioDto, TranslateDto } from './dtos';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { type Response } from 'express';
 import { diskStorage } from 'multer';
@@ -174,6 +174,13 @@ export class GptController {
         message: error ?? 'Error interno',
       });
     }
+  }
+
+  @Post('image-variation')
+  async imageVariation(
+    @Body() imageVariationDto: ImageVariationDTO
+  ) {
+    return await this.gptService.generateImageVariation(imageVariationDto);
   }
 
 }

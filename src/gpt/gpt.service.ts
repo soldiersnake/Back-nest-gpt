@@ -2,9 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import * as fs from 'fs';
 import OpenAI from 'openai';
 import * as path from 'path';
-import { AudioToTextDto, OrthographyDto, ProsConsDiscusserDto, TextToAudioDto, TranslateDto } from './dtos';
+import { AudioToTextDto, ImageVariationDTO, OrthographyDto, ProsConsDiscusserDto, TextToAudioDto, TranslateDto } from './dtos';
 import { ImageGenerationDto } from './dtos/Image-generation.dto';
-import { audioToTextUseCase, imageGenerationUseCase, orthographyCheckUseCase, prosConsDicusserStreamUseCase, prosConsDicusserUseCase, textToAudioUseCase, translateUseCase } from './use-cases';
+import { audioToTextUseCase, imageGenerationUseCase, imageVariationUseCase, orthographyCheckUseCase, prosConsDicusserStreamUseCase, prosConsDicusserUseCase, textToAudioUseCase, translateUseCase } from './use-cases';
 
 @Injectable()
 export class GptService {
@@ -63,5 +63,9 @@ export class GptService {
         }
 
         return filePath;
+    }
+
+    async generateImageVariation({ baseImage }: ImageVariationDTO) {
+        return imageVariationUseCase(this.openia, { baseImage })
     }
 }
