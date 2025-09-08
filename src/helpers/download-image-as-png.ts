@@ -1,6 +1,7 @@
 import * as path from "path";
 import { InternalServerErrorException } from "@nestjs/common";
 import * as fs from "fs";
+import * as sharp from 'sharp';
 
 
 
@@ -18,5 +19,14 @@ export const downloadImageAsPng = async (url: string) => {
     const imageNamePng = `${new Date().getTime()}.png`;
     const buffer = Buffer.from(await response.arrayBuffer());
 
-    fs.writeFileSync(`${folderPath}/${imageNamePng}`, buffer);
+    // fs.writeFileSync(`${folderPath}/${imageNamePng}`, buffer);
+
+    const completedPath = path.join(folderPath, imageNamePng)
+    await sharp(buffer)
+        .png()
+        .ensureAlpha()
+        .toFile(completedPath);
+
+    return path.join(folderPath, imageNamePng)
+
 }

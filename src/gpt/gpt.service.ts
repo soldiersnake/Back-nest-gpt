@@ -51,19 +51,16 @@ export class GptService {
     }
 
     async imageGeneration(imageGenerationDto: ImageGenerationDto) {
-        return imageGenerationUseCase(this.openia, { ...imageGenerationDto })
+        return await imageGenerationUseCase(this.openia, { ...imageGenerationDto })
     }
 
     getGeneratedImage(fileName: string) {
-        console.log(fileName);
-
         const filePath = path.resolve('./', './generated/images/', fileName);
         const exist = fs.existsSync(filePath);
 
         if (!exist) {
             throw new NotFoundException('File not found');
         }
-        console.log({ filePath });
 
         return filePath;
     }
