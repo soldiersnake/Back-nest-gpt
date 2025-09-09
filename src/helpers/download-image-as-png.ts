@@ -5,7 +5,7 @@ import * as sharp from 'sharp';
 
 
 
-export const downloadImageAsPng = async (url: string) => {
+export const downloadImageAsPng = async (url: string, fullPath?: boolean) => {
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -27,10 +27,10 @@ export const downloadImageAsPng = async (url: string) => {
         .ensureAlpha()
         .toFile(completedPath);
 
-    return imageNamePng;
+    return fullPath ? completedPath : imageNamePng;
 }
 
-export const downloadBase64ImageAsPng = async (base64Image: string) => {
+export const downloadBase64ImageAsPng = async (base64Image: string, fullPath?: boolean) => {
 
     // Remover encabezado
     base64Image = base64Image.split(';base64,').pop() ?? '';
@@ -48,5 +48,5 @@ export const downloadBase64ImageAsPng = async (base64Image: string) => {
         .ensureAlpha()
         .toFile(completedPath);
 
-    return imageNamePng;
+    return fullPath ? completedPath : imageNamePng;
 }
