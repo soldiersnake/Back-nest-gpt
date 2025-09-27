@@ -19,8 +19,7 @@ export class SamAssistantService {
 
         const message = await createMessageUseCase(this.openia, { threadId, question });
 
-        const run = await createRunUseCase(this.openia, { threadId })
-
+        const run = await createRunUseCase(this.openia, { threadId });
     }
 
 }
