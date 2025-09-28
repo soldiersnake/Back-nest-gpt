@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import OpenAI from 'openai';
-import { checkCompleteStatusUseCase, createMessageUseCase, createRunUseCase, createthreadUseCase } from './use-cases';
+import { checkCompleteStatusUseCase, createMessageUseCase, createRunUseCase, createthreadUseCase, getMessageListUseCase } from './use-cases';
 import { QuestionDto } from './dtos/questions.dto';
 
 @Injectable()
@@ -23,7 +23,11 @@ export class SamAssistantService {
 
         const run = await createRunUseCase(this.openia, { threadId });
 
-        await checkCompleteStatusUseCase(this.openia, { threadId: tId, runId: run.id })
+        await checkCompleteStatusUseCase(this.openia, { threadId: tId, runId: run.id });
+
+        const messages = await getMessageListUseCase(this.openia, { threadId })
+
+        return messages.reverse();
     }
 
 }
